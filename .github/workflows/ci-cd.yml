@@ -1,0 +1,55 @@
+
+name: Pipeline CI/CD - Demostracion
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  compilar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Verificar compilacion
+        run: npm run build
+
+  pruebas:
+    needs: compilar
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar pruebas unitarias
+        run: npm test
+
+  despliegue:
+    needs: pruebas
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Simular despliegue
+        run: echo "DESPLIEGUE EXITOSO"
